@@ -36,7 +36,7 @@ This implementation follows the tiny-secp256k1 API. Please refer to [tiny-secp25
 There are some minor differences, though:
 
 - These methods are not yet implemented: `signRecoverable`, `recover`, `xOnlyPointAddTweakCheck`. They are not used in ecpair or bip32.
-- `sign` throws an error with the message `Noble Ecc returns different values than Bitcoin Core for h = 0xffff.... This behavior is unsafe, so it has been disabled for safety reasons.` when `h = ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff`. This is as security protection.
+- `sign` throws an error with the message `Noble Ecc returns different values than Bitcoin Core for h = 0xffff.... This behavior is unsafe, so it has been disabled for safety reasons.` when `h = ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff`. This is a security protection.
 
 Tests have been adjusted to account for the differences above.
 
@@ -61,7 +61,7 @@ const node = BIP32.fromBase58(
 
 ### Usage with React Native
 
-@noble/secp256k1 uses Javascript BigInt, which is fully supported in React Native on iOS. However, to use it on Android, you must make sure you use the Hermes Javascript Engine, available from [RN-0.70 release](https://github.com/facebook/hermes/issues/510).
+@noble/secp256k1 uses Javascript `BigInt`, which is fully supported in React Native on iOS. However, to use it on Android, you must make sure you use the Hermes Javascript Engine, available from [RN-0.70 release](https://github.com/facebook/hermes/issues/510).
 
 ## Authors and Contributors
 
@@ -98,7 +98,7 @@ This will build the project and generate the necessary files in the `dist` direc
 Before committing any code, make sure it passes all tests by running:
 
 ```
-npm run tests
+npm run test
 ```
 
 ## Licensing
@@ -107,7 +107,7 @@ This project is licensed under the MIT License.
 
 ## Acknowledgments
 
-iThanks to Paul Miller for creating and maintaining the noble-secp256k1 library, upon which this library is based.
+Thanks to Paul Miller for creating and maintaining the noble-secp256k1 library, upon which this library is based.
 
 Thanks to the BitcoinJS team for creating and maintaining the BitcoinJS ecosystem, including the ecpair and bip32 libraries, which this library is designed to integrate with.
 
