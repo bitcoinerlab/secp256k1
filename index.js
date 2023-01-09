@@ -250,7 +250,12 @@ export function pointAdd(a, b, compressed) {
   return throwToNull(() => {
     const A = necc.Point.fromHex(a);
     const B = necc.Point.fromHex(b);
-    return A.add(B).toRawBytes(assumeCompression(compressed, a));
+    if (A.equals(B.negate())) {
+      //https://github.com/paulmillr/noble-secp256k1/issues/91
+      return null;
+    } else {
+      return A.add(B).toRawBytes(assumeCompression(compressed, a));
+    }
   });
 }
 export function pointAddScalar(p, tweak, compressed) {
