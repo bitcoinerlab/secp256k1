@@ -307,13 +307,6 @@ export function sign(h, d, e) {
   if (!isExtraData(e)) {
     throw new Error('Expected Extra Data (32 bytes)');
   }
-  if (
-    Buffer.from(h).toString('hex') ===
-    'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
-  )
-    throw new Error(
-      'Noble Ecc returns different values than Bitcoin Core for h = 0xffff.... This behavior is unsafe, so it has been disabled for safety reasons.'
-    );
   return necc.signSync(h, d, { der: false, extraEntropy: e });
 }
 
