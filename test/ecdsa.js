@@ -32,14 +32,6 @@ function corrupt(x) {
 export default function (secp256k1) {
   test("sign", (t) => {
     for (const f of fecdsa.valid) {
-      //@bitcoinerlab: Added this if condition below not to test with this `h`.
-      //Read the docs at README.md
-      if (
-        f.m ===
-        'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
-      ) {
-        continue;
-      }
       const d = fromHex(f.d);
       const m = fromHex(f.m);
       const expected = fromHex(f.signature);

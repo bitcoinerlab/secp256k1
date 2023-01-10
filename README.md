@@ -33,12 +33,7 @@ npm install @bitcoinerlab/secp256k1
 
 This implementation follows the tiny-secp256k1 API. Please refer to [tiny-secp256k1](https://github.com/bitcoinjs/tiny-secp256k1#documentation) for documentation on the methods.
 
-There are some minor differences, though:
-
-- These methods are not yet implemented: `signRecoverable`, `recover`, `xOnlyPointAddTweakCheck`. They are not used in ecpair or bip32.
-- `sign` throws an error with the message `Noble Ecc returns different values than Bitcoin Core for h = 0xffff.... This behavior is unsafe, so it has been disabled for safety reasons.` when `h = ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff`. This is a security protection.
-
-Tests have been adjusted to account for the differences above.
+These methods are not yet implemented: `signRecoverable`, `recover`, `xOnlyPointAddTweakCheck`. They are not used in ecpair or bip32, though.
 
 ### Examples
 
