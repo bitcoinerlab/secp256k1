@@ -4,6 +4,7 @@ https://github.com/bitcoinjs/ecpair/issues/13
 https://github.com/bitcoinjs/ecpair/pull/11
 https://github.com/bitcoinjs/tiny-secp256k1/issues/91
 https://github.com/bitcoinjs/tiny-secp256k1/issues/84#issuecomment-1210013688
+Test this: https://github.com/spsina/bip47
 -->
 
 # Secp256k1
