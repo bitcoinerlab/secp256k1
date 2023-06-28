@@ -322,9 +322,6 @@ export function signSchnorr(h, d, e) {
   if (!isHash(h)) {
     throw new Error('Expected Scalar');
   }
-  if (!isExtraData(e)) {
-    throw new Error('Expected Extra Data (32 bytes)');
-  }
   return necc.schnorr.signSync(h, d, e);
 }
 
