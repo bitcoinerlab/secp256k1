@@ -310,17 +310,15 @@ export function sign(h, d, e) {
   return necc.signSync(h, d, { der: false, extraEntropy: e });
 }
 
-export function signSchnorr(h, d, e) {
-  if (e === undefined) {
-    console.warn(
-      `Warning: The extra data 'e' is not defined. This library defaults to a random value when 'e' is undefined, which is different from the deterministic approach in tiny-secp256k1. This might lead to discrepancies in the Schnorr signatures between the two libraries.`
-    );
-  }
+export function signSchnorr(h, d, e = Buffer.alloc(32, 0x00)) {
   if (!isPrivate(d)) {
     throw new Error('Expected Private');
   }
   if (!isHash(h)) {
     throw new Error('Expected Scalar');
+  }
+  if (!isExtraData(e)) {
+    throw new Error('Expected Extra Data (32 bytes)');
   }
   return necc.schnorr.signSync(h, d, e);
 }
