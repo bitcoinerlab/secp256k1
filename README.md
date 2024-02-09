@@ -34,7 +34,7 @@ npm install @bitcoinerlab/secp256k1
 
 This implementation follows the tiny-secp256k1 API. Please refer to [tiny-secp256k1](https://github.com/bitcoinjs/tiny-secp256k1#documentation) for documentation on the methods.
 
-These methods are not yet implemented: `signRecoverable`, `recover`, `xOnlyPointAddTweakCheck`. They are not used in ecpair or bip32, though.
+This method is not yet implemented: `xOnlyPointAddTweakCheck`. It is not used in ecpair or bip32, though.
 
 ### Examples
 
