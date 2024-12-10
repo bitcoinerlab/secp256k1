@@ -109,13 +109,6 @@ function isExtraData(e) {
   );
 }
 
-function hexToNumber(hex) {
-  if (typeof hex !== "string") {
-    throw new TypeError("hexToNumber: expected string, got " + typeof hex);
-  }
-  return BigInt(`0x${hex}`);
-}
-
 function normalizeScalar(scalar) {
   let num;
   if (typeof scalar === "bigint") {
@@ -129,7 +122,7 @@ function normalizeScalar(scalar) {
   } else if (typeof scalar === "string") {
     if (scalar.length !== 64)
       throw new Error("Expected 32 bytes of private scalar");
-    num = hexToNumber(scalar);
+    num = utils.hexToNumber(scalar);
   } else if (scalar instanceof Uint8Array) {
     if (scalar.length !== 32)
       throw new Error("Expected 32 bytes of private scalar");
@@ -172,7 +165,7 @@ function _pointAddScalar(p, tweak, isCompressed) {
   const P = fromHex(p);
   const t = normalizeScalar(tweak);
   // multiplyAndAddUnsafe(P, scalar, 1) = P + scalar*G
-  const Q = Point.BASE.multiplyAndAddUnsafe(P, t, 1n);
+  const Q = Point.BASE.multiplyAndAddUnsafe(P, t, _1n);
   if (!Q) throw new Error("Tweaked point at infinity");
   return Q.toRawBytes(isCompressed);
 }
@@ -180,7 +173,7 @@ function _pointAddScalar(p, tweak, isCompressed) {
 function _pointMultiply(p, tweak, isCompressed) {
   const P = fromHex(p);
   const h = typeof tweak === "string" ? tweak : utils.bytesToHex(tweak);
-  const t = BigInt(`0x${h}`);
+  const t = utils.hexToNumber(h);
   return P.multiply(t).toRawBytes(isCompressed);
 }
 
@@ -199,28 +192,8 @@ function throwToNull(fn) {
   }
 }
 
-// Valid field elements are [1, p-1]
-function isValidFieldElement(num) {
-  return _0n < num && num < secp256k1P;
-}
-
-function weierstrassEquation(x) {
-  const { a, b } = CURVE;
-  const x2 = Fp.sqr(x); // x * x
-  const x3 = Fp.mul(x2, x); // x2 * x
-  return Fp.add(Fp.add(x3, Fp.mul(x, a)), b); // x3 + a * x + b
-}
-
 function fromXOnly(bytes) {
-  const x = utils.bytesToNumberBE(bytes);
-  if (!isValidFieldElement(x)) throw new Error("Point is not on curve");
-  const y2 = weierstrassEquation(x); // y² = x³ + ax + b
-  let y = Fp.sqrt(y2);
-  const isYOdd = (y & _1n) === _1n;
-  if (isYOdd) y = mod.mod(-y, secp256k1P);
-  const point = secp256k1.ProjectivePoint.fromAffine({ x, y });
-  point.assertValidity();
-  return point;
+  return schnorr.utils.lift_x(utils.bytesToNumberBE(bytes));
 }
 
 function fromHex(bytes) {
@@ -424,8 +397,8 @@ export function recover(h, signature, recoveryId, compressed) {
     throw new Error(THROW_BAD_SIGNATURE);
   }
 
-  const s = secp256k1.Signature.fromCompact(signature);
-  s.recovery = recoveryId;
+  const s =
+    secp256k1.Signature.fromCompact(signature).addRecoveryBit(recoveryId);
   const Q = s.recoverPublicKey(h);
   if (!Q) throw new Error(THROW_BAD_SIGNATURE);
   return Q.toRawBytes(assumeCompression(compressed));
