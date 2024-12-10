@@ -9,7 +9,7 @@ Test this: https://github.com/spsina/bip47
 
 # Secp256k1
 
-@bitcoinerlab/secp256k1 is a Javascript library for performing elliptic curve operations on the secp256k1 curve. It is designed to integrate into the [BitcoinJS](https://github.com/bitcoinjs) and [BitcoinerLAB](https://bitcoinerlab.com) ecosystems and uses the audited [noble-secp256k1 library](https://github.com/paulmillr/noble-secp256k1), created by [Paul Miller](https://paulmillr.com/noble/).
+@bitcoinerlab/secp256k1 is a Javascript library for performing elliptic curve operations on the secp256k1 curve. It is designed to integrate into the [BitcoinJS](https://github.com/bitcoinjs) and [BitcoinerLAB](https://bitcoinerlab.com) ecosystems and uses the audited [noble-curves library](https://github.com/paulmillr/noble-curves), created by [Paul Miller](https://paulmillr.com/noble/).
 
  This library is compatible with environments that do not support WebAssembly, such as React Native.
 
