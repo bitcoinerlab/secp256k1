@@ -41,11 +41,6 @@ const BN32_P_MINUS_N = new Uint8Array([
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 69, 81, 35, 25, 80, 183, 95,
   196, 64, 45, 161, 114, 47, 201, 186, 238,
 ]);
-
-const secp256k1P = BigInt(
-  "0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f",
-);
-const _0n = BigInt(0);
 const _1n = BigInt(1);
 
 function isUint8Array(value) {
@@ -137,9 +132,6 @@ function normalizeScalar(scalar) {
 function normalizePrivateKey(privateKey) {
   return secp256k1.utils.normPrivateKeyToScalar(privateKey);
 }
-
-const CURVE = secp256k1.CURVE;
-const { Fp } = CURVE;
 
 function _privateAdd(privateKey, tweak) {
   const p = normalizePrivateKey(privateKey);
