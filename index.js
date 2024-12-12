@@ -359,7 +359,7 @@ export function signRecoverable(h, d, e) {
   };
 }
 
-export function signSchnorr(h, d, e = new Uint8Array(32)) {
+export function signSchnorr(h, d, e) {
   if (!isPrivate(d)) {
     throw new Error(THROW_BAD_PRIVATE);
   }
