@@ -36,7 +36,7 @@ This implementation follows the tiny-secp256k1 API. Please refer to [tiny-secp25
 
 - **`xOnlyPointAddTweakCheck`**: This method is not yet implemented. It is not used in `ecpair` or `bip32`.
 
-- **`signSchnorr`**: Starting from version 1.2.0, this function no longer initializes the auxiliary random data parameter (`e`) to a zero-filled array by default. Instead, it requires the caller to explicitly provide randomness if desired. If omitted, the underlying implementation uses cryptographically secure randomness (through `crypto.getRandomValues`). For more details on this change, see the discussion [here](https://github.com/bitcoinerlab/secp256k1/pull/10#discussion_r1876541974) and the conclusions [here](https://github.com/bitcoinerlab/secp256k1/pull/10#issuecomment-2537916286).
+- **`signSchnorr`**: Starting from version 1.2.0, this function deviates from the exact behavior mapping with [`bitcoinjs/tiny-secp256k1`](https://github.com/bitcoinjs/tiny-secp256k1) and no longer initializes the auxiliary random data parameter (`e`) to a zero-filled array by default. Instead, it requires the caller to explicitly provide randomness if desired. If omitted, the underlying implementation uses cryptographically secure randomness (through `crypto.getRandomValues`). For more details on this change, see the discussion [here](https://github.com/bitcoinerlab/secp256k1/pull/10#discussion_r1876541974) and the conclusions [here](https://github.com/bitcoinerlab/secp256k1/pull/10#issuecomment-2537916286).
 
 ### Examples
 
