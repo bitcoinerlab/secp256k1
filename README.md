@@ -9,7 +9,7 @@ Test this: https://github.com/spsina/bip47
 
 # Secp256k1
 
-@bitcoinerlab/secp256k1 is a Javascript library for performing elliptic curve operations on the secp256k1 curve. It is designed to integrate into the [BitcoinJS](https://github.com/bitcoinjs) and [BitcoinerLAB](https://bitcoinerlab.com) ecosystems and uses the audited [noble-secp256k1 library](https://github.com/paulmillr/noble-secp256k1), created by [Paul Miller](https://paulmillr.com/noble/).
+@bitcoinerlab/secp256k1 is a Javascript library for performing elliptic curve operations on the secp256k1 curve. It is designed to integrate into the [BitcoinJS](https://github.com/bitcoinjs) and [BitcoinerLAB](https://bitcoinerlab.com) ecosystems and uses the audited [noble-curves library](https://github.com/paulmillr/noble-curves), created by [Paul Miller](https://paulmillr.com/noble/).
 
  This library is compatible with environments that do not support WebAssembly, such as React Native.
 
@@ -34,7 +34,9 @@ npm install @bitcoinerlab/secp256k1
 
 This implementation follows the tiny-secp256k1 API. Please refer to [tiny-secp256k1](https://github.com/bitcoinjs/tiny-secp256k1#documentation) for documentation on the methods.
 
-This method is not yet implemented: `xOnlyPointAddTweakCheck`. It is not used in ecpair or bip32, though.
+- **`xOnlyPointAddTweakCheck`**: This method is not yet implemented. It is not used in `ecpair` or `bip32`.
+
+- **`signSchnorr`**: Starting from version 1.2.0, this function deviates from the exact behavior mapping with [`bitcoinjs/tiny-secp256k1`](https://github.com/bitcoinjs/tiny-secp256k1) and no longer initializes the auxiliary random data parameter (`e`) to a zero-filled array by default. Instead, it requires the caller to explicitly provide randomness if desired. If omitted, the underlying implementation uses cryptographically secure randomness (through `crypto.getRandomValues`). For more details on this change, see the discussion [here](https://github.com/bitcoinerlab/secp256k1/pull/10#discussion_r1876541974) and the conclusions [here](https://github.com/bitcoinerlab/secp256k1/pull/10#issuecomment-2537916286).
 
 ### Examples
 
