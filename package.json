@@ -7,7 +7,7 @@
   "types": "types/index.d.ts",
   "scripts": {
     "build": "rollup -c --bundleConfigAsCjs",
-    "prepublishOnly": "npm run build && npm test",
+    "prepublishOnly": "rm -rf dist/ && npm run build && npm test",
     "test": "npx babel-node --plugins @babel/plugin-transform-modules-commonjs ./test/index.js | npx tap-summary",
     "example": "npx babel-node --plugins @babel/plugin-transform-modules-commonjs ./example.js"
   },
