@@ -16,7 +16,7 @@ Test this: https://github.com/spsina/bip47
 ## Features
 
 - Compatible with BitcoinJS [ecpair](https://github.com/bitcoinjs/ecpair) and [bip32](https://github.com/bitcoinjs/bip32) Factory functions.
-- Based on audited code [@noble/secp256k1](https://github.com/paulmillr/noble-secp256k1).
+- Based on audited code [@noble/curves](https://github.com/paulmillr/noble-curves).
 - Can be used in environments that do not support WASM, such as React Native.
 - Uses the same tests as [tiny-secp256k1](https://github.com/bitcoinjs/tiny-secp256k1).
 
@@ -27,6 +27,8 @@ To install the package, use npm:
 ```
 npm install @bitcoinerlab/secp256k1
 ```
+
+Version 2 requires Node.js 20.19 or newer. The package keeps its CommonJS entry point while using the ESM-only `@noble/curves` version 2 dependency.
 
 ## Usage
 
@@ -59,7 +61,9 @@ const node = BIP32.fromBase58(
 
 ### Usage with React Native
 
-@noble/secp256k1 uses Javascript `BigInt`, which is fully supported in React Native on iOS. However, to use it on Android, you must make sure you use the Hermes Javascript Engine, available from [RN-0.70 release](https://github.com/facebook/hermes/issues/510).
+`@noble/curves` uses Javascript `BigInt`, which is fully supported in React Native on iOS. However, to use it on Android, you must make sure you use the Hermes Javascript Engine, available from [RN-0.70 release](https://github.com/facebook/hermes/issues/510).
+
+Noble uses `crypto.getRandomValues` for operations such as Schnorr auxiliary randomness and scalar blinding. React Native environments that do not provide it must install a compatible polyfill such as [`react-native-get-random-values`](https://github.com/LinusU/react-native-get-random-values).
 
 ## Authors and Contributors
 
@@ -105,7 +109,7 @@ This project is licensed under the MIT License.
 
 ## Acknowledgments
 
-Thanks to Paul Miller for creating and maintaining the noble-secp256k1 library, upon which this library is based.
+Thanks to Paul Miller for creating and maintaining the noble-curves library, upon which this library is based.
 
 Thanks to the BitcoinJS team for creating and maintaining the BitcoinJS ecosystem, including the ecpair and bip32 libraries, which this library is designed to integrate with.
 

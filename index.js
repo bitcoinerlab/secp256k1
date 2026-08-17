@@ -14,11 +14,11 @@
  * tiny-secp256k1 (https://github.com/bitcoinjs/tiny-secp256k1/tests).
  */
 
-import { secp256k1, schnorr } from "@noble/curves/secp256k1";
-import * as mod from "@noble/curves/abstract/modular";
-import * as utils from "@noble/curves/abstract/utils";
+import { secp256k1, schnorr } from "@noble/curves/secp256k1.js";
+import * as utils from "@noble/curves/utils.js";
 
-const Point = secp256k1.ProjectivePoint;
+const Point = secp256k1.Point;
+const Fn = Point.Fn;
 
 const THROW_BAD_PRIVATE = "Expected Private";
 const THROW_BAD_POINT = "Expected Point";
@@ -41,7 +41,7 @@ const BN32_P_MINUS_N = new Uint8Array([
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 69, 81, 35, 25, 80, 183, 95,
   196, 64, 45, 161, 114, 47, 201, 186, 238,
 ]);
-const _1n = BigInt(1);
+const _0n = BigInt(0);
 
 function isUint8Array(value) {
   return value instanceof Uint8Array;
@@ -130,43 +130,41 @@ function normalizeScalar(scalar) {
 }
 
 function normalizePrivateKey(privateKey) {
-  return secp256k1.utils.normPrivateKeyToScalar(privateKey);
+  return Fn.fromBytes(privateKey);
 }
 
 function _privateAdd(privateKey, tweak) {
   const p = normalizePrivateKey(privateKey);
   const t = normalizeScalar(tweak);
-  const add = utils.numberToBytesBE(mod.mod(p + t, secp256k1.CURVE.n), 32);
-  return secp256k1.utils.isValidPrivateKey(add) ? add : null;
+  const add = Fn.add(p, t);
+  return Fn.isValidNot0(add) ? Fn.toBytes(add) : null;
 }
 
 function _privateSub(privateKey, tweak) {
   const p = normalizePrivateKey(privateKey);
   const t = normalizeScalar(tweak);
-  const sub = utils.numberToBytesBE(mod.mod(p - t, secp256k1.CURVE.n), 32);
-  return secp256k1.utils.isValidPrivateKey(sub) ? sub : null;
+  const sub = Fn.sub(p, t);
+  return Fn.isValidNot0(sub) ? Fn.toBytes(sub) : null;
 }
 
 function _privateNegate(privateKey) {
   const p = normalizePrivateKey(privateKey);
-  const not = utils.numberToBytesBE(secp256k1.CURVE.n - p, 32);
-  return secp256k1.utils.isValidPrivateKey(not) ? not : null;
+  return Fn.toBytes(Fn.neg(p));
 }
 
 function _pointAddScalar(p, tweak, isCompressed) {
   const P = fromHex(p);
   const t = normalizeScalar(tweak);
-  // multiplyAndAddUnsafe(P, scalar, 1) = P + scalar*G
-  const Q = Point.BASE.multiplyAndAddUnsafe(P, t, _1n);
-  if (!Q) throw new Error("Tweaked point at infinity");
-  return Q.toRawBytes(isCompressed);
+  const Q = t === _0n ? P : Point.BASE.multiply(t).add(P);
+  if (Q.is0()) throw new Error("Tweaked point at infinity");
+  return Q.toBytes(isCompressed);
 }
 
 function _pointMultiply(p, tweak, isCompressed) {
   const P = fromHex(p);
   const h = typeof tweak === "string" ? tweak : utils.bytesToHex(tweak);
   const t = utils.hexToNumber(h);
-  return P.multiply(t).toRawBytes(isCompressed);
+  return P.multiply(t).toBytes(isCompressed);
 }
 
 function assumeCompression(compressed, p) {
@@ -189,14 +187,14 @@ function fromXOnly(bytes) {
 }
 
 function fromHex(bytes) {
-  return bytes.length === 32 ? fromXOnly(bytes) : Point.fromHex(bytes);
+  return bytes.length === 32 ? fromXOnly(bytes) : Point.fromBytes(bytes);
 }
 
 function _isPoint(p, xOnly) {
   if ((p.length === 32) !== xOnly) return false;
   try {
     if (xOnly) return !!fromXOnly(p);
-    else return !!Point.fromHex(p);
+    else return !!Point.fromBytes(p);
   } catch (e) {
     return false;
   }
@@ -212,7 +210,7 @@ export function isPointCompressed(p) {
 }
 
 export function isPrivate(d) {
-  return secp256k1.utils.isValidPrivateKey(d);
+  return secp256k1.utils.isValidSecretKey(d);
 }
 
 export function isXOnlyPoint(p) {
@@ -260,7 +258,7 @@ export function pointCompress(p, compressed) {
   if (!isPoint(p)) {
     throw new Error(THROW_BAD_POINT);
   }
-  return fromHex(p).toRawBytes(assumeCompression(compressed, p));
+  return fromHex(p).toBytes(assumeCompression(compressed, p));
 }
 
 export function pointMultiply(a, tweak, compressed) {
@@ -285,7 +283,7 @@ export function pointAdd(a, b, compressed) {
     if (A.equals(B.negate())) {
       return null;
     } else {
-      return A.add(B).toRawBytes(assumeCompression(compressed, a));
+      return A.add(B).toBytes(assumeCompression(compressed, a));
     }
   });
 }
@@ -339,7 +337,12 @@ export function sign(h, d, e) {
   if (!isExtraData(e)) {
     throw new Error(THROW_BAD_EXTRA_DATA);
   }
-  return secp256k1.sign(h, d, { extraEntropy: e }).toCompactRawBytes();
+  return secp256k1.sign(h, d, {
+    prehash: false,
+    lowS: true,
+    format: "compact",
+    extraEntropy: e,
+  });
 }
 
 export function signRecoverable(h, d, e) {
@@ -352,10 +355,15 @@ export function signRecoverable(h, d, e) {
   if (!isExtraData(e)) {
     throw new Error(THROW_BAD_EXTRA_DATA);
   }
-  const sig = secp256k1.sign(h, d, { extraEntropy: e });
+  const sig = secp256k1.sign(h, d, {
+    prehash: false,
+    lowS: true,
+    format: "recovered",
+    extraEntropy: e,
+  });
   return {
-    signature: sig.toCompactRawBytes(),
-    recoveryId: sig.recovery,
+    signature: sig.slice(1),
+    recoveryId: sig[0],
   };
 }
 
@@ -390,10 +398,12 @@ export function recover(h, signature, recoveryId, compressed) {
   }
 
   const s =
-    secp256k1.Signature.fromCompact(signature).addRecoveryBit(recoveryId);
+    secp256k1.Signature.fromBytes(signature, "compact").addRecoveryBit(
+      recoveryId,
+    );
   const Q = s.recoverPublicKey(h);
   if (!Q) throw new Error(THROW_BAD_SIGNATURE);
-  return Q.toRawBytes(assumeCompression(compressed));
+  return Q.toBytes(assumeCompression(compressed));
 }
 
 export function verify(h, Q, signature, strict) {
@@ -406,7 +416,11 @@ export function verify(h, Q, signature, strict) {
   if (!isHash(h)) {
     throw new Error(THROW_BAD_SCALAR);
   }
-  return secp256k1.verify(signature, h, Q, { lowS: strict });
+  return secp256k1.verify(signature, h, Q, {
+    prehash: false,
+    lowS: strict,
+    format: "compact",
+  });
 }
 
 export function verifySchnorr(h, Q, signature) {
