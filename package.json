@@ -11,8 +11,8 @@
   "scripts": {
     "build": "rollup -c --bundleConfigAsCjs",
     "prepublishOnly": "rm -rf dist/ && npm run build && npm test",
-    "test": "npx babel-node --plugins @babel/plugin-transform-modules-commonjs ./test/index.js | npx tap-summary",
-    "example": "npx babel-node --plugins @babel/plugin-transform-modules-commonjs ./example.js"
+    "test": "babel-node --plugins @babel/plugin-transform-modules-commonjs ./test/index.js | tap-parser --silent",
+    "example": "babel-node --plugins @babel/plugin-transform-modules-commonjs ./example.js"
   },
   "repository": {
     "type": "git",
@@ -34,16 +34,15 @@
     "url": "https://github.com/bitcoinerlab/secp256k1/issues"
   },
   "devDependencies": {
-    "@babel/node": "^7.20.7",
-    "@babel/plugin-transform-modules-commonjs": "^7.20.11",
-    "bip32": "^3.1.0",
-    "ecpair": "^2.1.0",
-    "rollup": "^3.9.1",
-    "rollup-plugin-commonjs": "^10.1.0",
-    "tap-summary": "^4.0.0",
-    "tape": "^5.6.1"
+    "@babel/node": "^7.29.7",
+    "@babel/plugin-transform-modules-commonjs": "^7.29.7",
+    "bip32": "^5.0.1",
+    "ecpair": "^3.0.1",
+    "rollup": "^4.62.4",
+    "tap-parser": "^18.3.4",
+    "tape": "^5.10.2"
   },
   "dependencies": {
-    "@noble/curves": "2.3.0"
+    "@noble/curves": "^2.3.0"
   }
 }
